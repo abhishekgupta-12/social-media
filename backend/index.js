@@ -12,44 +12,45 @@ import path from "path";
 // Load environment variables
 dotenv.config();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 const __dirname = path.resolve();
 
-// CORS Configuration
-const allowedOrigins = [
-  "https://social-media-y7pz.onrender.com",               // Local dev frontend
-  process.env.URL               // Deployed frontend (optional)
-];
-
+// ✅ CORS Configuration — For local + Render deployment (same repo)
 const corsOptions = {
   origin: function (origin, callback) {
+    const allowedOrigins = [
+      "http://localhost:5173", // Local Vite dev server
+      undefined                // Allow same-origin when frontend is served by backend (on Render)
+    ];
+
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.log("❌ Blocked by CORS:", origin);
       callback(new Error("Not allowed by CORS"));
     }
   },
   credentials: true,
 };
 
-// Middlewares
+// ✅ Middleware
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 app.use(urlencoded({ extended: true }));
 
-// Routes
+// ✅ Routes
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/post", postRoute);
 app.use("/api/v1/message", messageRoute);
 
-// Serve frontend (Vite + React) build
+// ✅ Serve React Frontend from `frontend/dist`
 app.use(express.static(path.join(__dirname, "/frontend/dist")));
 app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
 });
 
-// Start server
+// ✅ Start the Server
 server.listen(PORT, () => {
   connectDB();
   console.log(`✅ Server running at http://localhost:${PORT}`);

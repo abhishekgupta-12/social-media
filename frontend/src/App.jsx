@@ -56,11 +56,10 @@ function App() {
   useEffect(() => {
     if (user) {
       const socketio = io('https://social-media-y7pz.onrender.com', {
-        query: {
-          userId: user?._id
-        },
+        query: { userId: user?._id },
         transports: ['websocket']
       });
+
       dispatch(setSocket(socketio));
 
       // listen all the events
