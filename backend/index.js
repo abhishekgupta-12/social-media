@@ -17,8 +17,8 @@ const __dirname = path.resolve();
 
 // CORS Configuration
 const allowedOrigins = [
-  "http://localhost:8000",               // Local dev frontend
-  process.env.FRONTEND_URL               // Deployed frontend (optional)
+  "https://social-media-y7pz.onrender.com",               // Local dev frontend
+  process.env.URL               // Deployed frontend (optional)
 ];
 
 const corsOptions = {

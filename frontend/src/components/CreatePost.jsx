@@ -35,7 +35,7 @@ const CreatePost = ({ open, setOpen }) => {
     if (imagePreview) formData.append("image", file);
     try {
       setLoading(true);
-      const res = await axios.post('http://localhost:8000/api/v1/post/addpost', formData, {
+      const res = await axios.post('https://social-media-y7pz.onrender.com/api/v1/post/addpost', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         },
