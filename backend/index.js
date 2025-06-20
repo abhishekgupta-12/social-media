@@ -9,30 +9,18 @@ import messageRoute from "./routes/message.route.js";
 import { app, server } from "./socket/socket.js";
 import path from "path";
 
-// Load environment variables
 dotenv.config();
 
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 3000;
 const __dirname = path.resolve();
 
-// ✅ CORS Configuration
+// ✅ Correct CORS middleware for same-domain deployment
 const corsOptions = {
-  origin: function (origin, callback) {
-    const allowedOrigins = [
-      "http://localhost:5173",
-      undefined
-    ];
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.log("❌ Blocked by CORS:", origin);
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
+  origin: true, // Allow same-origin (Render serves frontend + backend together)
+  credentials: true
 };
 
-// ✅ Middleware
+// ✅ Apply middlewares
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
@@ -43,17 +31,17 @@ app.use("/api/v1/user", userRoute);
 app.use("/api/v1/post", postRoute);
 app.use("/api/v1/message", messageRoute);
 
-// ✅ Static Files
-const staticPath = path.join(__dirname, "/frontend/dist");
-app.use(express.static(staticPath));
+// ✅ Serve frontend static files from Vite build
+const frontendPath = path.join(__dirname, "/frontend/dist");
+app.use(express.static(frontendPath));
 
-// ✅ Catch-all for React routes (AFTER static)
+// ✅ React fallback (for routes like /profile/:id)
 app.get("*", (req, res) => {
-  res.sendFile(path.resolve(staticPath, "index.html"));
+  res.sendFile(path.join(frontendPath, "index.html"));
 });
 
-// ✅ Start Server
+// ✅ Start the server
 server.listen(PORT, () => {
   connectDB();
-  console.log(`✅ Server running at http://localhost:${PORT}`);
+  console.log(`✅ Server is running at http://localhost:${PORT}`);
 });
