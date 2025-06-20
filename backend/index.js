@@ -15,14 +15,13 @@ dotenv.config();
 const PORT = process.env.PORT || 8000;
 const __dirname = path.resolve();
 
-// ✅ CORS Configuration — For local + Render deployment (same repo)
+// ✅ CORS Configuration
 const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
-      "http://localhost:5173", // Local Vite dev server
-      undefined                // Allow same-origin when frontend is served by backend (on Render)
+      "http://localhost:5173",
+      undefined
     ];
-
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -39,18 +38,21 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(urlencoded({ extended: true }));
 
-// ✅ Routes
+// ✅ API Routes
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/post", postRoute);
 app.use("/api/v1/message", messageRoute);
 
-// ✅ Serve React Frontend from `frontend/dist`
-app.use(express.static(path.join(__dirname, "/frontend/dist")));
+// ✅ Static Files
+const staticPath = path.join(__dirname, "/frontend/dist");
+app.use(express.static(staticPath));
+
+// ✅ Catch-all for React routes (AFTER static)
 app.get("*", (req, res) => {
-  res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+  res.sendFile(path.resolve(staticPath, "index.html"));
 });
 
-// ✅ Start the Server
+// ✅ Start Server
 server.listen(PORT, () => {
   connectDB();
   console.log(`✅ Server running at http://localhost:${PORT}`);
